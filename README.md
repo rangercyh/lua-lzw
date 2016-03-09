@@ -8,6 +8,7 @@ Using
 * local code, dict = lzw.deflate('asdf')
 * -- decompress
 * lzw.inflate(code, dict)
+
 Licence
 =====
 
