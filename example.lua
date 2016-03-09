@@ -32,5 +32,9 @@ local tbCode, tbChar = lzw.deflate(szSource)
 print('tbCode, tbChar = ', tbCode, tbChar)
 print(lzw.inflate(tbCode, tbChar))
 
-lzw.setToken(345)
+lzw.setToken("asdasd")
 print(lzw.inflate(lzw.deflate(szSource)))
+
+local tbCode, tbChar = lzw.deflate(szSource, "asdf")
+print('tbCode, tbChar = ', tbCode, tbChar)
+print(lzw.inflate(tbCode, tbChar, "asdf"))
