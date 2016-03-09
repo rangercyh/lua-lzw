@@ -1,5 +1,6 @@
 local lzw = {}
-local nDefaultCode = 42   -- init token code
+local nDefaultCode = 42 -- init token code
+local primeKey = 97     -- prime key to mod
 
 local function lzwFindFirstNormalChar(tbDeCodeToken, szCode)
     local szNormalChar = szCode
@@ -24,12 +25,12 @@ local function lzwDecodeToSource(szSource, tbDeCodeToken, szPrefix)
     return szSource
 end
 
-local function addCharNum(tNum)
+local function getToken(tNum)
     local sum = 0
     for _, v in pairs(tNum) do
         sum = sum + v
     end
-    return sum
+    return sum % primeKey
 end
 
 -- compress
@@ -40,7 +41,7 @@ function lzw.deflate(szSource, szToken)
     local tbToken = {}
     local nTokenCode = nDefaultCode
     if szToken then
-        nTokenCode = addCharNum(table.pack(string.byte(szToken, 1, string.len(szToken))))
+        nTokenCode = getToken(table.pack(string.byte(szToken, 1, string.len(szToken))))
     end
     for szChar in string.gmatch(szSource, ".") do
         tbChar[szChar] = true
@@ -71,7 +72,7 @@ function lzw.inflate(tbCode, tbChar, szToken)
     local tbDeCodeToken = {}
     local nTokenCode = nDefaultCode
     if szToken then
-        nTokenCode = addCharNum(table.pack(string.byte(szToken, 1, string.len(szToken))))
+        nTokenCode = getToken(table.pack(string.byte(szToken, 1, string.len(szToken))))
     end
     for _, szCode in ipairs(tbCode) do
         if szPrefix ~= "" then
