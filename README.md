@@ -1,6 +1,6 @@
 Description
 =====
-using pure lua to release lzw compress and decompress.
+
 Using
 =====
 * require "lzw"
