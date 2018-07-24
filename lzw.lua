@@ -1,5 +1,6 @@
 local lzw = {}
-local nTokenCode = 42   -- init token code
+local nDefaultCode = 42 -- init token code
+local primeKey = 97     -- prime key to mod
 
 local function lzwFindFirstNormalChar(tbDeCodeToken, szCode)
     local szNormalChar = szCode
@@ -24,13 +25,24 @@ local function lzwDecodeToSource(szSource, tbDeCodeToken, szPrefix)
     return szSource
 end
 
+local function getToken(tNum)
+    local sum = 0
+    for _, v in pairs(tNum) do
+        sum = sum + v
+    end
+    return sum % primeKey
+end
+
 -- compress
-function lzw.deflate(szSource, nBeginCode)
+function lzw.deflate(szSource, szToken)
     local tbOutput = {}
     local tbChar = {}
     local szPrefix = ""
     local tbToken = {}
-    local nTokenCode = nBeginCode or nTokenCode
+    local nTokenCode = nDefaultCode
+    if szToken then
+        nTokenCode = getToken(table.pack(string.byte(szToken, 1, string.len(szToken))))
+    end
     for szChar in string.gmatch(szSource, ".") do
         tbChar[szChar] = true
         if szPrefix == "" then
@@ -53,12 +65,15 @@ function lzw.deflate(szSource, nBeginCode)
 end
 
 -- decompress
-function lzw.inflate(tbCode, tbChar, nBeginCode)
+function lzw.inflate(tbCode, tbChar, szToken)
     local szSource = ""
     local szPrefix = ""
     local tbToken = {}
     local tbDeCodeToken = {}
-    local nTokenCode = nBeginCode or nTokenCode
+    local nTokenCode = nDefaultCode
+    if szToken then
+        nTokenCode = getToken(table.pack(string.byte(szToken, 1, string.len(szToken))))
+    end
     for _, szCode in ipairs(tbCode) do
         if szPrefix ~= "" then
             if tbChar[szCode] then  -- judge whether is a normal suffix
@@ -96,9 +111,9 @@ function lzw.inflate(tbCode, tbChar, nBeginCode)
     return szSource
 end
 
-function lzw.setToken(num)
-    assert(type(num) == "number")
-    nTokenCode = num
+function lzw.setToken(token)
+    -- assert(type(num) == "number")
+    nTokenCode = token
 end
 
 return lzw
