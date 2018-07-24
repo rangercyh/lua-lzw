@@ -15,8 +15,8 @@ dependencies = {
     "lua >= 5.1"
 }
 build = {
-    type = "buildin",
+    type = "builtin",
     modules = {
-        tiny = "lzw.lua"
+        lzw_tiny = "lzw.lua"
     }
 }
